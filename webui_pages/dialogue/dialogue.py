@@ -11,6 +11,8 @@ from configs import (TEMPERATURE, HISTORY_LEN, PROMPT_TEMPLATES, LLM_MODELS,
 from server.knowledge_base.utils import LOADER_DICT
 import uuid
 from typing import List, Dict
+import logging
+
 
 chat_box = ChatBox(
     assistant_avatar=os.path.join(
@@ -96,7 +98,9 @@ def parse_command(text: str, modal: Modal) -> bool:
     return False
 
 
-def dialogue_page(api: ApiRequest, is_lite: bool = False):
+def dialogue_page(api: ApiRequest, is_lite: bool = False):   
+    logging.info("yxdz-ApiRequest")
+    logging.info(ApiRequest)   
     st.session_state.setdefault("conversation_ids", {})
     st.session_state["conversation_ids"].setdefault(chat_box.cur_chat_name, uuid.uuid4().hex)
     st.session_state.setdefault("file_chat_id", None)
@@ -303,6 +307,12 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                 chat_box.ai_say("正在思考...")
                 text = ""
                 message_id = ""
+
+                logging.info("yxdz-history")
+                logging.info(prompt)
+                logging.info("yxdz-history")
+                logging.info(history)
+
                 r = api.chat_chat(prompt,
                                   history=history,
                                   conversation_id=conversation_id,
@@ -325,7 +335,6 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                        key=message_id,
                                        on_submit=on_feedback,
                                        kwargs={"message_id": message_id, "history_index": len(chat_box.history) - 1})
-
             elif dialogue_mode == "自定义Agent问答":
                 if not any(agent in llm_model for agent in SUPPORT_AGENT_MODEL):
                     chat_box.ai_say([
@@ -369,7 +378,14 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                     f"正在查询知识库 `{selected_kb}` ...",
                     Markdown("...", in_expander=True, title="知识库匹配结果", state="complete"),
                 ])
-                text = ""
+                text = ""    
+
+                logging.info("yxdz-kb-prompt")
+                logging.info(prompt)
+                logging.info("yxdz-kb-history")
+                logging.info(history)
+
+
                 for d in api.knowledge_base_chat(prompt,
                                                  knowledge_base_name=selected_kb,
                                                  top_k=kb_top_k,
@@ -383,8 +399,15 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                     elif chunk := d.get("answer"):
                         text += chunk
                         chat_box.update_msg(text, element_index=0)
+                        
+                    logging.info("yxdz-kb-d")
+                    logging.info(d)                 
+                    
                 chat_box.update_msg(text, element_index=0, streaming=False)
                 chat_box.update_msg("\n\n".join(d.get("docs", [])), element_index=1, streaming=False)
+
+                
+
             elif dialogue_mode == "文件对话":
                 if st.session_state["file_chat_id"] is None:
                     st.error("请先上传文件再进行对话")

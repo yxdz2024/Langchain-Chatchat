@@ -78,8 +78,13 @@ class KBService(ABC):
         """
         if not os.path.exists(self.doc_path):
             os.makedirs(self.doc_path)
+        print("yxdz-create_kb开始")
         self.do_create_kb()
+        print("yxdz-create_kb结束")
         status = add_kb_to_db(self.kb_name, self.kb_info, self.vs_type(), self.embed_model)
+        print("yxdz-add_kb_to_db结束")
+
+
         return status
 
     def clear_vs(self):
@@ -415,7 +420,7 @@ def get_kb_file_details(kb_name: str) -> List[Dict]:
 
     return data
 
-
+#本地模型构造器
 class EmbeddingsFunAdapter(Embeddings):
     def __init__(self, embed_model: str = EMBEDDING_MODEL):
         self.embed_model = embed_model

@@ -57,7 +57,11 @@ class _FaissPool(CachePool):
     ) -> FAISS:
         embeddings = EmbeddingsFunAdapter(embed_model)
         doc = Document(page_content="init", metadata={})
+        print("yxdz-vector_store开始")
+        print(embed_model)
+        print(embeddings)
         vector_store = FAISS.from_documents([doc], embeddings, normalize_L2=True,distance_strategy="METRIC_INNER_PRODUCT")
+        print("yxdz-vector_store结束")
         ids = list(vector_store.docstore._dict.keys())
         vector_store.delete(ids)
         return vector_store
@@ -84,6 +88,8 @@ class KBFaissPool(_FaissPool):
         self.atomic.acquire()
         vector_name = vector_name or embed_model
         cache = self.get((kb_name, vector_name)) # 用元组比拼接字符串好一些
+
+        #print("yxdz-KBFaissPool-load_vector_store开始")
         if cache is None:
             item = ThreadSafeFaiss((kb_name, vector_name), pool=self)
             self.set((kb_name, vector_name), item)
@@ -99,7 +105,11 @@ class KBFaissPool(_FaissPool):
                     # create an empty vector store
                     if not os.path.exists(vs_path):
                         os.makedirs(vs_path)
+                    print("yxdz-KBFaissPool-load_vector_store-1")
+                    print(embed_model)
+                    print(embed_device)
                     vector_store = self.new_vector_store(embed_model=embed_model, embed_device=embed_device)
+                    print("yxdz-KBFaissPool-load_vector_store-2")
                     vector_store.save_local(vs_path)
                 else:
                     raise RuntimeError(f"knowledge base {kb_name} not exist.")

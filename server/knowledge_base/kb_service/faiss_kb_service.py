@@ -8,6 +8,7 @@ from server.knowledge_base.utils import KnowledgeFile, get_kb_path, get_vs_path
 from server.utils import torch_gc
 from langchain.docstore.document import Document
 from typing import List, Dict, Optional, Tuple
+import logging
 
 
 class FaissKBService(KBService):
@@ -62,10 +63,19 @@ class FaissKBService(KBService):
                   top_k: int,
                   score_threshold: float = SCORE_THRESHOLD,
                   ) -> List[Tuple[Document, float]]:
+        
+
         embed_func = EmbeddingsFunAdapter(self.embed_model)
         embeddings = embed_func.embed_query(query)
+
+        logging.info("yxdz-embeddings")
+        logging.info(embeddings)
+
         with self.load_vector_store().acquire() as vs:
             docs = vs.similarity_search_with_score_by_vector(embeddings, k=top_k, score_threshold=score_threshold)
+        
+        logging.info("yxdz-docs")
+        logging.info(docs)
         return docs
 
     def do_add_doc(self,
@@ -74,6 +84,11 @@ class FaissKBService(KBService):
                    ) -> List[Dict]:
         data = self._docs_to_embeddings(docs) # 将向量化单独出来可以减少向量库的锁定时间
 
+
+        logging.info("yxdz-do_add_doc-data")
+        logging.info(data)
+        logging.info("yxdz-do_add_doc-kwargs")
+        logging.info(kwargs)
         with self.load_vector_store().acquire() as vs:
             ids = vs.add_embeddings(text_embeddings=zip(data["texts"], data["embeddings"]),
                                     metadatas=data["metadatas"],

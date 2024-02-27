@@ -121,6 +121,11 @@ class EmbeddingsPool(CachePool):
         self.atomic.acquire()
         model = model or EMBEDDING_MODEL
         device = embedding_device()
+
+        print("\nyxdz-model",model)
+
+        print("\nyxdz-device",device)
+
         key = (model, device)
         if not self.get(key):
             item = ThreadSafeObject(key, pool=self)
@@ -143,9 +148,12 @@ class EmbeddingsPool(CachePool):
                     else:
                         # maybe ReRanker or else, just use empty string instead
                         query_instruction = ""
+                    print("\nyxdz-get_model_path",get_model_path(model))
                     embeddings = HuggingFaceBgeEmbeddings(model_name=get_model_path(model),
                                                           model_kwargs={'device': device},
-                                                          query_instruction=query_instruction)
+                                                          query_instruction=query_instruction,
+                                                          )
+                    
                     if model == "bge-large-zh-noinstruct":  # bge large -noinstruct embedding
                         embeddings.query_instruction = ""
                 else:

@@ -49,7 +49,10 @@ data = {
 
 
 def test_chat_chat(api="/chat/chat"):
+
     url = f"{api_base_url}{api}"
+
+     print("yxdz-test_chat_chat",print)
     dump_input(data, api)
     response = requests.post(url, headers=headers, json=data, stream=True)
     dump_output(response, api)

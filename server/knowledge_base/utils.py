@@ -20,6 +20,7 @@ from server.utils import run_in_thread_pool, get_model_worker_config
 import json
 from typing import List, Union,Dict, Tuple, Generator
 import chardet
+import logging
 
 
 def validate_kb_name(knowledge_base_id: str) -> bool:
@@ -297,6 +298,9 @@ class KnowledgeFile:
                                 file_path=self.filepath,
                                 loader_kwargs=self.loader_kwargs)
             self.docs = loader.load()
+
+            logging.info("yxdz-file2docs-docs")
+            logging.info(self.docs)
         return self.docs
 
     def docs2texts(
@@ -309,6 +313,9 @@ class KnowledgeFile:
             text_splitter: TextSplitter = None,
     ):
         docs = docs or self.file2docs(refresh=refresh)
+
+        logging.info("yxdz-docs2texts-docs1")
+        logging.info(docs)
         if not docs:
             return []
         if self.ext not in [".csv"]:
@@ -317,15 +324,21 @@ class KnowledgeFile:
                                                    chunk_overlap=chunk_overlap)
             if self.text_splitter_name == "MarkdownHeaderTextSplitter":
                 docs = text_splitter.split_text(docs[0].page_content)
+                logging.info("yxdz-docs2texts-docs1.1")
             else:
                 docs = text_splitter.split_documents(docs)
-
+                logging.info("yxdz-docs2texts-docs1.2")
+        logging.info("yxdz-docs2texts-docs2")
+        logging.info(docs)
         if not docs:
             return []
 
         print(f"文档切分示例：{docs[0]}")
         if zh_title_enhance:
             docs = func_zh_title_enhance(docs)
+
+        logging.info("yxdz-docs2texts-docs")
+        logging.info(docs)
         self.splited_docs = docs
         return self.splited_docs
 

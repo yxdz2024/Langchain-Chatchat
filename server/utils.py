@@ -321,31 +321,48 @@ def list_config_llm_models() -> Dict[str, Dict]:
         "worker": workers,
     }
 
-
+#yxdz 返回模型地址
 def get_model_path(model_name: str, type: str = None) -> Optional[str]:
+    
+    print("yxdz-返回模型地址1",model_name)
     if type in MODEL_PATH:
         paths = MODEL_PATH[type]
     else:
         paths = {}
         for v in MODEL_PATH.values():
             paths.update(v)
-
+    
+    #print("yxdz-返回模型地址2",paths)
+    
     if path_str := paths.get(model_name):  # 以 "chatglm-6b": "THUDM/chatglm-6b-new" 为例，以下都是支持的路径
         path = Path(path_str)
+        print("yxdz-返回模型地址2.1",path)
+
         if path.is_dir():  # 任意绝对路径
             return str(path)
 
         root_path = Path(MODEL_ROOT_PATH)
+
+        print("yxdz-返回模型地址3",root_path)
+        print("yxdz-返回模型地址3.1.1",root_path.is_dir())
+        print("yxdz-返回工作地址3.1.2",os.getcwd())
+
         if root_path.is_dir():
             path = root_path / model_name
-            if path.is_dir():  # use key, {MODEL_ROOT_PATH}/chatglm-6b
+            print("yxdz-返回模型地址3.1",path)
+            print("yxdz-返回模型地址3.2",path.is_dir())
+            if path.is_dir():  # use key, {MODEL_ROOT_PATH}/chatglm-6b                
+                print("yxdz-返回模型地址4",path)                
                 return str(path)
             path = root_path / path_str
             if path.is_dir():  # use value, {MODEL_ROOT_PATH}/THUDM/chatglm-6b-new
+                print("yxdz-返回模型地址5",path) 
                 return str(path)
             path = root_path / path_str.split("/")[-1]
             if path.is_dir():  # use value split by "/", {MODEL_ROOT_PATH}/chatglm-6b-new
+                print("yxdz-返回模型地址6",path) 
                 return str(path)
+        print("yxdz-返回模型地址7",path_str)
         return path_str  # THUDM/chatglm06b
 
 
@@ -666,6 +683,8 @@ def load_local_embeddings(model: str = None, device: str = embedding_device()):
     from configs import EMBEDDING_MODEL
 
     model = model or EMBEDDING_MODEL
+
+    
     return embeddings_pool.load_embeddings(model=model, device=device)
 
 

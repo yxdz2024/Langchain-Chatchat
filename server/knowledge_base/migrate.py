@@ -116,17 +116,24 @@ def folder2db(
 
     kb_names = kb_names or list_kbs_from_folder()
     for kb_name in kb_names:
+        print("yxdz-KBServiceFactory-开始")
         kb = KBServiceFactory.get_service(kb_name, vs_type, embed_model)
+        print("yxdz-KBServiceFactory-结束")
+
+        print("yxdz-kb.exists",kb.exists())
         if not kb.exists():
             kb.create_kb()
 
         # 清除向量库，从本地文件重建
         if mode == "recreate_vs":
+
+            print("yxdz-重建向量库-开始")
             kb.clear_vs()
             kb.create_kb()
             kb_files = file_to_kbfile(kb_name, list_files_from_folder(kb_name))
             files2vs(kb_name, kb_files)
             kb.save_vector_store()
+            print("yxdz-重建向量库-结束")
         # # 不做文件内容的向量化，仅将文件元信息存到数据库
         # # 由于现在数据库存了很多与文本切分相关的信息，单纯存储文件信息意义不大，该功能取消。
         # elif mode == "fill_info_only":

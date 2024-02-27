@@ -17,6 +17,7 @@ from server.db.repository.knowledge_file_repository import get_file_detail
 from langchain.docstore.document import Document
 from server.knowledge_base.model.kb_document_model import DocumentWithVSId
 from typing import List, Dict
+import logging
 
 
 def search_docs(
@@ -163,6 +164,10 @@ def upload_docs(
             file_names.append(filename)
 
     # 对保存的文件进行向量化
+
+    logging.info("yxdz-upload_docs")
+    logging.info(docs)
+
     if to_vector_store:
         result = update_docs(
             knowledge_base_name=knowledge_base_name,

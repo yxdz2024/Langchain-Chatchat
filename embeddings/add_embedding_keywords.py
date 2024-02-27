@@ -44,8 +44,13 @@ def add_keyword_to_model(model_name=EMBEDDING_MODEL, keyword_file: str = "", out
     with open(keyword_file, "r") as f:
         for line in f:
             key_words.append(line.strip())
+    print("\nyxdz-SentenceTransformer-model_name")
+    print(model_name)
 
     st_model = SentenceTransformer(model_name)
+    print("\nyxdz-SentenceTransformer-st_model")
+    print(st_model)
+
     key_words_len = len(key_words)
     word_embedding_model = st_model._first_module()
     bert_model = word_embedding_model.auto_model

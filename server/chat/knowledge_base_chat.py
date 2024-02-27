@@ -23,6 +23,9 @@ from urllib.parse import urlencode
 from server.knowledge_base.kb_doc_api import search_docs
 from server.reranker.reranker import LangchainReranker
 from server.utils import embedding_device
+import logging
+
+
 async def knowledge_base_chat(query: str = Body(..., description="用户输入", examples=["你好"]),
                               knowledge_base_name: str = Body(..., description="知识库名称", examples=["samples"]),
                               top_k: int = Body(VECTOR_SEARCH_TOP_K, description="匹配向量数"),
@@ -78,11 +81,20 @@ async def knowledge_base_chat(query: str = Body(..., description="用户输入",
             max_tokens=max_tokens,
             callbacks=[callback],
         )
+
+        logging.info("yxdz-search_docs")
+        logging.info(search_docs)
+
+        logging.info("yxdz-query")
+        logging.info(query)
+
         docs = await run_in_threadpool(search_docs,
                                        query=query,
                                        knowledge_base_name=knowledge_base_name,
                                        top_k=top_k,
                                        score_threshold=score_threshold)
+        logging.info("yxdz-docs")
+        logging.info(docs)
 
         # 加入reranker
         if USE_RERANKER:
@@ -106,8 +118,15 @@ async def knowledge_base_chat(query: str = Body(..., description="用户输入",
         else:
             prompt_template = get_prompt_template("knowledge_base_chat", prompt_name)
         input_msg = History(role="user", content=prompt_template).to_msg_template(False)
+        
+        logging.info("yxdz-input_msg")
+        logging.info(input_msg)
+
         chat_prompt = ChatPromptTemplate.from_messages(
             [i.to_msg_template() for i in history] + [input_msg])
+
+        logging.info("yxdz-chat_prompt")
+        logging.info(chat_prompt)
 
         chain = LLMChain(prompt=chat_prompt, llm=model)
 
