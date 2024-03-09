@@ -26,7 +26,7 @@ class ThreadSafeObject:
         return self._key
 
     @contextmanager
-    def acquire(self, owner: str = "", msg: str = "") -> FAISS:
+    def acquire(self, owner: str = "", msg: str = "") -> FAISS: # type: ignore 
         owner = owner or f"thread {threading.get_native_id()}"
         try:
             self._lock.acquire()
@@ -34,7 +34,7 @@ class ThreadSafeObject:
                 self._pool._cache.move_to_end(self.key)
             if log_verbose:
                 logger.info(f"{owner} 开始操作：{self.key}。{msg}")
-            yield self._obj
+            yield self._obj           
         finally:
             if log_verbose:
                 logger.info(f"{owner} 结束操作：{self.key}。{msg}")
@@ -149,6 +149,7 @@ class EmbeddingsPool(CachePool):
                         # maybe ReRanker or else, just use empty string instead
                         query_instruction = ""
                     print("\nyxdz-get_model_path",get_model_path(model))
+                    print("\nyxdz-query_instruction",query_instruction)
                     embeddings = HuggingFaceBgeEmbeddings(model_name=get_model_path(model),
                                                           model_kwargs={'device': device},
                                                           query_instruction=query_instruction,

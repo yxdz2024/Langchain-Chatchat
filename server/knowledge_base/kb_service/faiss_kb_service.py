@@ -35,6 +35,8 @@ class FaissKBService(KBService):
 
     def get_doc_by_ids(self, ids: List[str]) -> List[Document]:
         with self.load_vector_store().acquire() as vs:
+            print("yxdz-get_doc_by_ids-vs")
+            print(vs)
             return [vs.docstore._dict.get(id) for id in ids]
 
     def del_doc_by_ids(self, ids: List[str]) -> bool:
@@ -63,39 +65,56 @@ class FaissKBService(KBService):
                   top_k: int,
                   score_threshold: float = SCORE_THRESHOLD,
                   ) -> List[Tuple[Document, float]]:
-        
-
         embed_func = EmbeddingsFunAdapter(self.embed_model)
+        logging.info("yxdz-embed_func")
+        logging.info(embed_func)
+        logging.info("yxdz-query")
+        logging.info(query)
+
+
         embeddings = embed_func.embed_query(query)
+
 
         logging.info("yxdz-embeddings")
         logging.info(embeddings)
 
+        logging.info(top_k)
+        logging.info(score_threshold)
         with self.load_vector_store().acquire() as vs:
+            
             docs = vs.similarity_search_with_score_by_vector(embeddings, k=top_k, score_threshold=score_threshold)
-        
-        logging.info("yxdz-docs")
-        logging.info(docs)
-        return docs
+            #不使用向量
+            docs1 = vs.similarity_search_with_score(query,k=top_k, score_threshold=score_threshold)
+
+
+            print("yxdz-r1")
+            print(docs1)
+            
+            print("yxdz-r2")
+            print(docs)
+        return docs1
 
     def do_add_doc(self,
                    docs: List[Document],
                    **kwargs,
                    ) -> List[Dict]:
         data = self._docs_to_embeddings(docs) # 将向量化单独出来可以减少向量库的锁定时间
-
-
+        
         logging.info("yxdz-do_add_doc-data")
         logging.info(data)
-        logging.info("yxdz-do_add_doc-kwargs")
-        logging.info(kwargs)
+
         with self.load_vector_store().acquire() as vs:
             ids = vs.add_embeddings(text_embeddings=zip(data["texts"], data["embeddings"]),
                                     metadatas=data["metadatas"],
                                     ids=kwargs.get("ids"))
             if not kwargs.get("not_refresh_vs_cache"):
                 vs.save_local(self.vs_path)
-        doc_infos = [{"id": id, "metadata": doc.metadata} for id, doc in zip(ids, docs)]
+                logging.info("yxdz-self.vs_path")
+                logging.info(self.vs_path)
+            
+
+
+        doc_infos = [{"id": id, "metadata": doc.metadata} for id, doc in zip(ids, docs)]        
         torch_gc()
         return doc_infos
 
