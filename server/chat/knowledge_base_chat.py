@@ -82,19 +82,13 @@ async def knowledge_base_chat(query: str = Body(..., description="用户输入",
             callbacks=[callback],
         )
 
-        logging.info("yxdz-search_docs")
-        logging.info(search_docs)
-
-        logging.info("yxdz-query")
-        logging.info(query)
 
         docs = await run_in_threadpool(search_docs,
                                        query=query,
                                        knowledge_base_name=knowledge_base_name,
                                        top_k=top_k,
                                        score_threshold=score_threshold)
-        logging.info("yxdz-docs")
-        logging.info(docs)
+     
 
         # 加入reranker
         if USE_RERANKER:

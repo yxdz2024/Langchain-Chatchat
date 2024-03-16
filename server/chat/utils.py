@@ -29,6 +29,10 @@ class History(BaseModel):
         else:
             content = self.content
 
+        print("yxdz-History-content")
+        print(content)
+        
+
         return ChatMessagePromptTemplate.from_template(
             content,
             "jinja2",

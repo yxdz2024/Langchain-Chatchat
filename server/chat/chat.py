@@ -39,13 +39,19 @@ async def chat(query: str = Body(..., description="用户输入", examples=["恼
         callback = AsyncIteratorCallbackHandler()
         callbacks = [callback]
         memory = None
-
+        
         # 负责保存llm response到message db
         message_id = add_message_to_db(chat_type="llm_chat", query=query, conversation_id=conversation_id)
         conversation_callback = ConversationCallbackHandler(conversation_id=conversation_id, message_id=message_id,
                                                             chat_type="llm_chat",
                                                             query=query)
         callbacks.append(conversation_callback)
+
+        print("yxdz-chat-conversation_id")
+        print(conversation_id)
+
+        print("yxdz-chat-query")
+        print(query)
 
         if isinstance(max_tokens, int) and max_tokens <= 0:
             max_tokens = None
@@ -56,6 +62,9 @@ async def chat(query: str = Body(..., description="用户输入", examples=["恼
             max_tokens=max_tokens,
             callbacks=callbacks,
         )
+
+        print("yxdz-chat-history")
+        print(history)
 
         if history: # 优先使用前端传入的历史消息
             history = [History.from_data(h) for h in history]
@@ -76,6 +85,10 @@ async def chat(query: str = Body(..., description="用户输入", examples=["恼
             input_msg = History(role="user", content=prompt_template).to_msg_template(False)
             chat_prompt = ChatPromptTemplate.from_messages([input_msg])
 
+        print("yxdz-chat-prompt")
+        print(chat_prompt)
+        print(input_msg)
+        print(chat_prompt)
         chain = LLMChain(prompt=chat_prompt, llm=model, memory=memory)
 
         # Begin a task that runs in the background.

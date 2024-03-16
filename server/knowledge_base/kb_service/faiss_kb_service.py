@@ -75,11 +75,11 @@ class FaissKBService(KBService):
         embeddings = embed_func.embed_query(query)
 
 
-        logging.info("yxdz-embeddings")
-        logging.info(embeddings)
+        # logging.info("yxdz-embeddings")
+        # logging.info(embeddings)
 
-        logging.info(top_k)
-        logging.info(score_threshold)
+        # logging.info(top_k)
+        # logging.info(score_threshold)
         with self.load_vector_store().acquire() as vs:
             
             docs = vs.similarity_search_with_score_by_vector(embeddings, k=top_k, score_threshold=score_threshold)
