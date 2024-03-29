@@ -21,11 +21,11 @@ def embed_texts(
         if embed_model in list_embed_models():  # 使用本地Embeddings模型
             from server.utils import load_local_embeddings
 
-            print("yxdz-本地模型加载：",embed_model)
+            #print("yxdz-本地模型加载：",embed_model)
 
             embeddings = load_local_embeddings(model=embed_model)
 
-            print("yxdz-本地模型加载完成")
+            #print("yxdz-本地模型加载完成")
 
             return BaseResponse(data=embeddings.embed_documents(texts))
 

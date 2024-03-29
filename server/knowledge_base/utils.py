@@ -184,6 +184,7 @@ def get_loader(loader_name: str, file_path: str, loader_kwargs: Dict = None):
         loader_kwargs.setdefault("text_content", False)
 
     loader = DocumentLoader(file_path, **loader_kwargs)
+    print("get_loader",loader)
     return loader
 
 
@@ -315,7 +316,7 @@ class KnowledgeFile:
         docs = docs or self.file2docs(refresh=refresh)
 
         logging.info("yxdz-docs2texts-docs1")
-        logging.info(docs)
+        #logging.info(docs)
         if not docs:
             return []
         if self.ext not in [".csv"]:

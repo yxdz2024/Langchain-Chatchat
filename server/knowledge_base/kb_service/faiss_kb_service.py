@@ -35,8 +35,8 @@ class FaissKBService(KBService):
 
     def get_doc_by_ids(self, ids: List[str]) -> List[Document]:
         with self.load_vector_store().acquire() as vs:
-            print("yxdz-get_doc_by_ids-vs")
-            print(vs)
+            #print("yxdz-get_doc_by_ids-vs")
+            #print(vs)
             return [vs.docstore._dict.get(id) for id in ids]
 
     def del_doc_by_ids(self, ids: List[str]) -> bool:
