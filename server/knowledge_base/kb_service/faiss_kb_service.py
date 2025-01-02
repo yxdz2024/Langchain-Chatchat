@@ -58,7 +58,7 @@ class FaissKBService(KBService):
         try:
             shutil.rmtree(self.kb_path)
         except Exception:
-            ...
+                ...
 
     def do_search(self,
                   query: str,
@@ -82,16 +82,32 @@ class FaissKBService(KBService):
         # logging.info(score_threshold)
         with self.load_vector_store().acquire() as vs:
             
-            docs = vs.similarity_search_with_score_by_vector(embeddings, k=top_k, score_threshold=score_threshold)
+            docs2 = vs.similarity_search_with_score_by_vector(embeddings, k=top_k, score_threshold=score_threshold)
             #不使用向量
             docs1 = vs.similarity_search_with_score(query,k=top_k, score_threshold=score_threshold)
 
+            docs3 = vs.max_marginal_relevance_search(query,k=top_k, lambda_mult=score_threshold)
+
+            docs4= vs.max_marginal_relevance_search_by_vector(embeddings,k=top_k, lambda_mult =score_threshold)
+
+            #docs5=vs._similarity_search_with_relevance_scores(query,k=top_k)
 
             print("yxdz-r1")
             print(docs1)
             
             print("yxdz-r2")
-            print(docs)
+            print(docs2)
+
+            print("yxdz-r3-max_marginal_relevance_search")
+            print(docs3)
+
+            print("yxdz-r4-max_marginal_relevance_search-embed")
+            print(docs4)
+
+            #print("yxdz-r5-similarity_search_with_relevance_scores")
+            #print(docs5)
+
+
         return docs1
 
     def do_add_doc(self,

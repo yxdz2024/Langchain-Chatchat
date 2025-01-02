@@ -10,6 +10,7 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain.agents import LLMSingleActionAgent, AgentExecutor
 from typing import AsyncIterable, Optional, List
 
+from server.agent.tools.travel2 import Travel2
 from server.utils import wrap_done, get_ChatOpenAI, get_prompt_template
 from server.knowledge_base.kb_service.base import get_kb_details
 from server.agent.custom_agent.ChatGLM3Agent import initialize_glm3_agent
@@ -68,8 +69,15 @@ async def agent_chat(query: str = Body(..., description="用户输入", examples
             model_container.MODEL = model_agent
         else:
             model_container.MODEL = model
+            
+        #把这里去掉不报错
+        tools=[Travel2()]
 
         prompt_template = get_prompt_template("agent_chat", prompt_name)
+
+        print("prompt_template")
+        print(prompt_template)
+
         prompt_template_agent = CustomPromptTemplate(
             template=prompt_template,
             tools=tools,
@@ -98,10 +106,11 @@ async def agent_chat(query: str = Body(..., description="用户输入", examples
                 llm_chain=llm_chain,
                 output_parser=output_parser,
                 stop=["\nObservation:", "Observation"],
-                allowed_tools=tool_names,
+                #allowed_tools=tool_names,
+                allowed_tools=["Travel2"]
             )
             agent_executor = AgentExecutor.from_agent_and_tools(agent=agent,
-                                                                tools=tools,
+                                                                tools=tools,    
                                                                 verbose=True,
                                                                 memory=memory,
                                                                 )

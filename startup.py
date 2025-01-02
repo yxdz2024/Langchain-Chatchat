@@ -428,6 +428,22 @@ def run_openai_api(log_level: str = "INFO", started_event: mp.Event = None):
         sys.stderr = sys.__stderr__
     uvicorn.run(app, host=host, port=port)
 
+def run_openai_api_for_hanlde_text(log_level: str = "INFO", started_event: mp.Event = None):
+    import uvicorn
+    import sys
+    from server.utils import set_httpx_config
+    set_httpx_config()
+
+    controller_addr = fschat_controller_address()
+    app = create_openai_api_app(controller_addr, log_level=log_level)
+    _set_app_event(app, started_event)
+
+    host = FSCHAT_OPENAI_API["host"]
+    port = FSCHAT_OPENAI_API["port"]
+    if log_level == "ERROR":
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+    uvicorn.run(app, host=host, port=port)
 
 def run_api_server(started_event: mp.Event = None, run_mode: str = None):
     from server.api import create_app

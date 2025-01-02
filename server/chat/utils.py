@@ -41,9 +41,11 @@ class History(BaseModel):
 
     @classmethod
     def from_data(cls, h: Union[List, Tuple, Dict]) -> "History":
+        print("from_data=h1:",h)
         if isinstance(h, (list,tuple)) and len(h) >= 2:
             h = cls(role=h[0], content=h[1])
         elif isinstance(h, dict):
             h = cls(**h)
 
+        print("from_data=h:",h)
         return h
